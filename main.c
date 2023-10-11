@@ -19,32 +19,12 @@ typedef struct {
     Student students[MAX_STUDENTS];
 } Course;
 
-int isBlank(const char *str) {
-    while (*str) {
-        if (!isspace((unsigned char)*str))
-            return 0;
-        str++;
-    }
-    return 1;
-}
-
-void printStudentReport(const char *studentName, Course courses[], int courseCount) {
-    printf("\nReport for %s:\n", studentName);
-    printf("%-25s %s\n", "Course", "Grade");
-    printf("------------------------- ------\n");
-    bool found = false;
-    for (int i = 0; i < courseCount; i++) {
-        for (int j = 0; j < courses[i].studentCount; j++) {
-            if (strcmp(courses[i].students[j].name, studentName) == 0) {
-                printf("%-25s %d\n", courses[i].title, courses[i].students[j].grade);
-                found = true;
-            }
-        }
-    }
-    if (!found) {
-        printf("No courses found for student %s\n", studentName);
-    }
-}
+// Function declarations
+bool isValidGrade(int grade);
+double calculateCourseAverage(Course *course);
+double calculateStudentAverage(const char *studentName, Course courses[], int courseCount);
+int isBlank(const char *str);
+void printStudentReport(const char *studentName, Course courses[], int courseCount);
 
 int main() {
     Course courses[MAX_COURSES];
@@ -83,6 +63,10 @@ int main() {
                 printf("Error on line %d: Incorrectly formatted student data.\n", lineNumber);
                 continue;
             }
+            if (!isValidGrade(student.grade)) {
+                printf("Error on line %d: Invalid grade.\n", lineNumber);
+                continue;
+            }
             if (currentCourse->studentCount < MAX_STUDENTS) {
                 currentCourse->students[currentCourse->studentCount] = student;
                 currentCourse->studentCount++;
@@ -107,6 +91,65 @@ int main() {
         printStudentReport(studentName, courses, courseCount);
     }
 
+    for (int i = 0; i < courseCount; i++) {
+        printf("Average grade for course %s: %.2f\n", courses[i].title, calculateCourseAverage(&courses[i]));
+    }
 
     return 0;
+}
+
+// Function definitions
+
+bool isValidGrade(int grade) {
+    return grade >= 0 && grade <= 5;
+}
+
+double calculateCourseAverage(Course *course) {
+    int total = 0;
+    for (int i = 0; i < course->studentCount; i++) {
+        total += course->students[i].grade;
+    }
+    return (double)total / course->studentCount;
+}
+
+double calculateStudentAverage(const char *studentName, Course courses[], int courseCount) {
+    int total = 0;
+    int count = 0;
+    for (int i = 0; i < courseCount; i++) {
+        for (int j = 0; j < courses[i].studentCount; j++) {
+            if (strcmp(courses[i].students[j].name, studentName) == 0) {
+                total += courses[i].students[j].grade;
+                count++;
+            }
+        }
+    }
+    return count > 0 ? (double)total / count : 0;
+}
+
+int isBlank(const char *str) {
+    while (*str) {
+        if (!isspace((unsigned char)*str))
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
+void printStudentReport(const char *studentName, Course courses[], int courseCount) {
+    printf("\nReport for %s:\n", studentName);
+    printf("%-25s %s\n", "Course", "Grade");
+    printf("------------------------- ------\n");
+    bool found = false;
+    for (int i = 0; i < courseCount; i++) {
+        for (int j = 0; j < courses[i].studentCount; j++) {
+            if (strcmp(courses[i].students[j].name, studentName) == 0) {
+                printf("%-25s %d\n", courses[i].title, courses[i].students[j].grade);
+                found = true;
+            }
+        }
+    }
+    if (!found) {
+        printf("No courses found for student %s\n", studentName);
+    }
+    printf("Average grade for student %s: %.2f\n", studentName, calculateStudentAverage(studentName, courses, courseCount));
 }
