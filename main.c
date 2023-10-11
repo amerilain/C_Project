@@ -19,7 +19,6 @@ typedef struct {
     Student students[MAX_STUDENTS];
 } Course;
 
-// Function declarations
 bool isValidGrade(int grade);
 double calculateCourseAverage(Course *course);
 double calculateStudentAverage(const char *studentName, Course courses[], int courseCount);
@@ -98,7 +97,6 @@ int main() {
     return 0;
 }
 
-// Function definitions
 
 bool isValidGrade(int grade) {
     return grade >= 0 && grade <= 5;
